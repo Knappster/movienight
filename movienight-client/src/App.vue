@@ -10,31 +10,11 @@
 
 			<div class="chatbox">
 				<div class="chatbox__username" v-if="!ready">
-					<h4>Enter your username</h4>
-					<form @submit.prevent="addUser">
-						<div>
-							<input type="text" placeholder="Enter username here" v-model="user.name">
-							<input type="text" placeholder="Color" v-model="user.color">
-							<input type="submit" value="Join">
-						</div>
-					</form>
+					<user-name v-on:user="addUser($event)"></user-name>
 				</div>
 
 				<div class="chatbox__container" v-else>
-					<div class="chatbox__messages" v-chat-scroll="{always: false, smooth: true}">
-						<small v-if="typing" class="text-white">{{typing}} is typing</small>
-						<div :class="[
-								'chatbox__messages__message'
-								, 'chatbox__messages__message--' + message.type
-							]"
-							v-for="message in messages"
-							:key="message.id"
-						>
-							<span>
-								<b v-if="message.user.name" :style="{color: user.color}">{{message.user.name}}: </b>{{message.message}}
-							</span>
-						</div>
-					</div>
+					<chat-messages :messages="messages" :user="user"></chat-messages>
 
 					<div class="chatbox__message">
 						<form @submit.prevent="send">
@@ -52,11 +32,15 @@
 
 <script>
 import VideoPlayer from './components/VideoPlayer.vue';
+import UserName from './components/UserName.vue';
+import ChatMessages from './components/ChatMessages.vue';
 
 export default {
 	name: 'app'
 	, components: {
 		VideoPlayer
+		, UserName
+		, ChatMessages
 	}
 	, data () {
 		return {
@@ -93,12 +77,6 @@ export default {
 				, user: data.user
 			});
 		}
-		, typing(data) {
-			this.typing = data;
-		}
-		, stopTyping() {
-			this.typing = false;
-		}
 		, joined(data) {
 			this.messages.push({
 				message: data + ' has joined...'
@@ -113,15 +91,6 @@ export default {
 				, user: ''
 			});
 		}
-	}
-	, watch: {
-		// newMessage(value) {
-		// 	if (value) {
-		// 		this.$socket.emit('typing', this.username);
-		// 	} else {
-		// 		this.$socket.emit('stopTyping');
-		// 	}
-		// }
 	}
 	, methods: {
 		send() {
@@ -138,8 +107,9 @@ export default {
 
 			this.newMessage = null;
 		}
-		, addUser() {
+		, addUser(user) {
 			this.ready = true;
+			this.user = user;
 			this.messages.push({
 				message: this.user.name + ' has joined...'
 				, type: 'system'
@@ -152,110 +122,113 @@ export default {
 </script>
 
 <style lang="scss">
+@import url('https://fonts.googleapis.com/css?family=Permanent+Marker&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700&display=swap');
 
-	@import url('https://fonts.googleapis.com/css?family=Permanent+Marker&display=swap');
-	@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,400i,600,700&display=swap');
+body,
+html {
+	height: 100%;
+	color: #fff;
+	font-family: 'Open Sans', sans-serif;
+	font-size: 16px;
+	line-height: 1.4em;
+}
 
-	body,
-	html {
-		height: 100%;
-		color: #fff;
-		font-family: 'Open Sans', sans-serif;
-		font-size: 16px;
-		line-height: 1.4em;
+#app {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	max-height: 100%;
+	background-color: #450845;
+}
+
+.title {
+	flex-grow: 0;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #621C62;
+	color: #d5ff00;
+	font-family: 'Permanent Marker', cursive;
+	margin: 0;
+	font-size: 40px;
+	font-weight: normal;
+	line-height: 100%;
+	text-align: center;
+	height: 80px;
+
+	&::before {
+		content: '';
+		display: inline-block;
+		width: 56px;
+		height: 56px;
+		background: url('assets/images/lurk.png') no-repeat center;
+		background-size: 100%;
+		margin-right: .5em;
 	}
 
-	#app {
+	&::after {
+		content: '';
+		display: inline-block;
+		width: 56px;
+		height: 56px;
+		background: url('assets/images/rock.png') no-repeat center;
+		background-size: 100%;
+		margin-left: .5em;
+	}
+}
+
+.container {
+	flex-grow: 1;
+	flex-shrink: 1;
+	display: flex;
+	max-height: calc(100% - 80px);
+}
+
+.video {
+	flex-grow: 1;
+	padding: 20px;
+	background: url('assets/images/background.gif') repeat-x center;
+	background-size: auto 100%;
+}
+
+.chatbox {
+	flex-grow: 0;
+	flex-shrink: 0;
+	width: 260px;
+	background-color: #270E48;
+	padding: 20px;
+
+	&__container {
+		height: 100%;
 		display: flex;
 		flex-direction: column;
-		height: 100%;
-		max-height: 100%;
-		background-color: #450845;
+		justify-content: flex-end;
 	}
 
-	.title {
-		flex-grow: 0;
-		background-color: #783479;
-		color: #CCDB81;
-		font-family: 'Permanent Marker', cursive;
-		margin: 0;
-		font-size: 40px;
-		line-height: 100%;
-		text-align: center;
-		line-height: 80px;
-		height: 80px;
-	}
+	&__message {
+		padding-top: 10px;
 
-	.container {
-		flex-grow: 1;
-		flex-shrink: 1;
-		display: flex;
-		max-height: calc(100% - 80px);
-	}
+		input {
+			color: #fff;
+			width: 100%;
+			-webkit-appearance: none;
+			appearance: none;
+			background-color: transparent;
+			border: 0;
+			height: 1.4em;
 
-	.video {
-		flex-grow: 1;
-		padding: 20px;
-	}
-
-	.chatbox {
-		flex-grow: 0;
-		flex-shrink: 0;
-		width: 260px;
-		background-color: #270E48;
-		padding: 20px;
-
-		&__container {
-			height: 100%;
-			display: flex;
-			flex-direction: column;
-			justify-content: flex-end;
-		}
-
-		&__messages {
-			flex-grow: 0;
-			overflow-y: auto;
-			border-bottom: 1px solid #79609A;
-			padding-bottom: 10px;
-			font-size: 14px;
-
-			&__message {
-				margin-bottom: 5px;
-
-				&--system {
-					color: rgba(#fff, .7);
-				}
-			}
-
-			&::-webkit-scrollbar {
-				width: 5px;
-			}
-
-			&::-webkit-scrollbar-track {
-				background: #402466;
-			}
-
-			&::-webkit-scrollbar-thumb {
-				background: #79609A; 
-			}
-		}
-
-		&__message {
-			padding-top: 10px;
-
-			input {
-				color: #fff;
-				width: 100%;
-				-webkit-appearance: none;
-				appearance: none;
-				background-color: transparent;
-				border: 0;
-				height: 1.4em;
-
-				&:focus {
-					outline: 0;
-				}
+			&:focus {
+				outline: 0;
 			}
 		}
 	}
+}
+
+.vjs-modal-dialog {
+	&:focus {
+		outline: 0;
+		border: 0;
+	}
+}
 </style>
