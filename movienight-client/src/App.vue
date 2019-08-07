@@ -17,11 +17,13 @@
 					<chat-messages :messages="messages" :user="user"></chat-messages>
 
 					<div class="chatbox__message">
-						<form @submit.prevent="send">
-							<div>
-								<input type="text" placeholder="Send a message" v-model="newMessage">
-							</div>
-						</form>
+						<textarea
+							placeholder="Send a message"
+							v-model="newMessage"
+							@keydown.enter.exact.prevent
+							@keyup.enter.exact="send"
+							@keydown.enter.shift.exact="newline"
+						></textarea>
 					</div>
 				</div>
 			</div>
@@ -56,8 +58,8 @@ export default {
 				autoplay: true
 				, controls: true
 				, sources: [{
-					src: 'https://movienight.knappster.co.uk/live/stream.mpd'
-					, type: 'application/dash+xml'
+					src: 'https://movienight.knappster.co.uk/live/stream.m3u8'
+					, type: 'application/x-mpegURL'
 				}]
 			}
 		}
@@ -117,6 +119,9 @@ export default {
 			});
 			this.$socket.emit('joined', this.user.name);
 		}
+		, newline() {
+			this.newMessage = `${this.newMessage}\n`;
+		}
 	}
 }
 </script>
@@ -151,11 +156,18 @@ html {
 	color: #d5ff00;
 	font-family: 'Permanent Marker', cursive;
 	margin: 0;
-	font-size: 40px;
+	font-size: 26px;
 	font-weight: normal;
 	line-height: 100%;
 	text-align: center;
-	height: 80px;
+	height: 60px;
+	padding: 10px;
+
+	@media (min-width: 769px) {
+		height: 80px;
+		font-size: 40px;
+		padding: 0;
+	}
 
 	&::before {
 		content: '';
@@ -179,25 +191,38 @@ html {
 }
 
 .container {
-	flex-grow: 1;
-	flex-shrink: 1;
+	flex: 1;
 	display: flex;
-	max-height: calc(100% - 80px);
+	flex-direction: column;
+	max-height: calc(100% - 60px);
+	background: url('assets/images/background.gif') repeat-x center;
+	background-size: auto 100%;
+
+	@media (min-width: 769px) {
+		flex-direction: row;
+		max-height: calc(100% - 80px);
+	}
 }
 
 .video {
-	flex-grow: 1;
-	padding: 20px;
-	background: url('assets/images/background.gif') repeat-x center;
-	background-size: auto 100%;
+	flex: 0;
+
+	@media (min-width: 769px) {
+		flex-grow: 1;
+		flex-shrink: 0;
+		padding: 20px;
+	}
 }
 
 .chatbox {
-	flex-grow: 0;
-	flex-shrink: 0;
-	width: 260px;
-	background-color: #270E48;
+	flex: 0;
+	background-color: rgba(#270E48, .9);
 	padding: 20px;
+
+	@media (min-width: 769px) {
+		flex-basis: 260px;
+		height: auto;
+	}
 
 	&__container {
 		height: 100%;
@@ -209,14 +234,19 @@ html {
 	&__message {
 		padding-top: 10px;
 
-		input {
+		textarea {
 			color: #fff;
 			width: 100%;
 			-webkit-appearance: none;
 			appearance: none;
 			background-color: transparent;
 			border: 0;
-			height: 1.4em;
+			height: 2.8em;
+			font-size: 14px;
+			line-height: 1.4em;
+			resize: none;
+			overflow: hidden;
+			padding: 0;
 
 			&:focus {
 				outline: 0;

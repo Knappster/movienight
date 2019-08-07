@@ -6,7 +6,7 @@ import VueSocketio from 'vue-socket.io-extended';
 import io from 'socket.io-client';
 import VueChatScroll from 'vue-chat-scroll';
  
-Vue.use(VueSocketio, io('http://localhost:3000'));
+Vue.use(VueSocketio, io('https://movienight.knappster.co.uk'));
 Vue.use(VueChatScroll);
 
 new Vue({

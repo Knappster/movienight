@@ -8,7 +8,7 @@
 			:key="message.id"
 		>
 			<span>
-				<b v-if="message.user.name" :style="{color: '#'+user.color}">{{message.user.name}}: </b>{{message.message}}
+				<b v-if="message.user.name" :style="{color: '#'+message.user.color}">{{message.user.name}}: </b>{{message.message}}
 			</span>
 		</div>
 	</div>
@@ -31,6 +31,7 @@ export default {
 	border-bottom: 1px solid #79609A;
 	padding-bottom: 10px;
 	font-size: 14px;
+	overflow: hidden;
 
 	&__message {
 		margin-bottom: 5px;
