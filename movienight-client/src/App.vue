@@ -3,7 +3,6 @@
 		<h1 class="title">Blurry's movie night!!!</h1>
 
 		<div class="container">
-
 			<div class="video">
 				<video-player :options="videoOptions"></video-player>
 			</div>
@@ -19,6 +18,7 @@
 					<div class="chatbox__message">
 						<textarea
 							placeholder="Send a message"
+							maxlength="500"
 							v-model="newMessage"
 							@keydown.enter.exact.prevent
 							@keyup.enter.exact="send"
@@ -27,7 +27,6 @@
 					</div>
 				</div>
 			</div>
-
 		</div>
 	</div>
 </template>
@@ -58,9 +57,10 @@ export default {
 				autoplay: true
 				, controls: true
 				, sources: [{
-					src: 'https://movienight.knappster.co.uk/live/stream.m3u8'
+					src: '/live/stream.m3u8'
 					, type: 'application/x-mpegURL'
 				}]
+				, errorDisplay: false
 			}
 		}
 	}
@@ -73,8 +73,9 @@ export default {
 	}
 	, sockets: {
 		chatMessage(data) {
+			let message = data.message.substring(1, 500);
 			this.messages.push({
-				message: data.message
+				message: message
 				, type: 'normal'
 				, user: data.user
 			});
@@ -96,18 +97,20 @@ export default {
 	}
 	, methods: {
 		send() {
-			this.messages.push({
-				message: this.newMessage
-				, type: 'self'
-				, user: this.user
-			});
+			if (this.newMessage != null && this.newMessage !== '') {
+				this.messages.push({
+					message: this.newMessage
+					, type: 'self'
+					, user: this.user
+				});
 
-			this.$socket.emit('chatMessage', {
-				message: this.newMessage
-				, user: this.user
-			});
+				this.$socket.emit('chatMessage', {
+					message: this.newMessage
+					, user: this.user
+				});
 
-			this.newMessage = null;
+				this.newMessage = null;
+			}
 		}
 		, addUser(user) {
 			this.ready = true;
@@ -137,7 +140,17 @@ html {
 	font-family: 'Open Sans', sans-serif;
 	font-size: 16px;
 	line-height: 1.4em;
+	box-sizing: border-box;
 }
+
+* {
+	&,
+	&::before,
+	&::after {
+		box-sizing: inherit;
+	}
+}
+
 
 #app {
 	display: flex;
@@ -191,48 +204,58 @@ html {
 }
 
 .container {
-	flex: 1;
 	display: flex;
 	flex-direction: column;
-	max-height: calc(100% - 60px);
+	height: calc(100% - 60px);
 	background: url('assets/images/background.gif') repeat-x center;
 	background-size: auto 100%;
 
 	@media (min-width: 769px) {
 		flex-direction: row;
-		max-height: calc(100% - 80px);
+		height: calc(100% - 80px);
 	}
 }
 
 .video {
-	flex: 0;
-
 	@media (min-width: 769px) {
 		flex-grow: 1;
-		flex-shrink: 0;
 		padding: 20px;
 	}
 }
 
 .chatbox {
-	flex: 0;
+	flex: 1 0 auto;
 	background-color: rgba(#270E48, .9);
 	padding: 20px;
+	position: relative;
 
 	@media (min-width: 769px) {
-		flex-basis: 260px;
+		flex-grow: 0;
+		flex-basis: 300px;
 		height: auto;
 	}
 
 	&__container {
-		height: 100%;
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-end;
+
+		@media (min-width: 769px) {
+			height: 100%;
+		}
 	}
 
 	&__message {
-		padding-top: 10px;
+		padding: 10px;
+
+		@media (min-width: 769px) {
+			padding: 10px 20px;
+		}
 
 		textarea {
 			color: #fff;

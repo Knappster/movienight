@@ -31,11 +31,15 @@ export default {
 	border-bottom: 1px solid #79609A;
 	padding-bottom: 10px;
 	font-size: 14px;
-	overflow: hidden;
 
 	&__message {
+		padding: 0 10px;
 		margin-bottom: 5px;
 		word-break: break-word;
+
+		@media (min-width: 769px) {
+			padding: 0 20px;
+		}
 
 		&--system {
 			color: rgba(#fff, .7);

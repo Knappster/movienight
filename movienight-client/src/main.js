@@ -6,7 +6,7 @@ import VueSocketio from 'vue-socket.io-extended';
 import io from 'socket.io-client';
 import VueChatScroll from 'vue-chat-scroll';
  
-Vue.use(VueSocketio, io('https://movienight.knappster.co.uk'));
+Vue.use(VueSocketio, io('/'));
 Vue.use(VueChatScroll);
 
 new Vue({

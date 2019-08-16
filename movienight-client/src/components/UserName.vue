@@ -3,7 +3,7 @@
 		<form @submit.prevent="addUser">
 			<div class="username__form-group">
 				<label for="username" class="username__label">Enter your username:</label>
-				<input id="username" type="text" placeholder="Enter username here" v-model="user.name" ref="username">
+				<input id="username" class="username__input" :class="{ 'username__input--error'  : error }" type="text" placeholder="Enter username here" v-model="user.name" ref="username" autocomplete="off">
 			</div>
 			<div class="username__form-group">
 				<h3 class="username__label">Pick a colour:</h3>
@@ -87,6 +87,7 @@ export default {
 				name: ''
 				, color: 'ffffff'
 			}
+			, error: false
 		}
 	}
 	, mounted() {
@@ -94,7 +95,11 @@ export default {
 	}
 	, methods: {
 		addUser() {
-			this.$emit('user', this.user);
+			if (this.user.name !== '') {
+				this.$emit('user', this.user);
+			} else {
+				this.error = true;
+			}
 		}
 	}
 }
@@ -126,19 +131,25 @@ export default {
 				padding: 10px 30px;
 				cursor: pointer;
 			}
+		}
 
-			input[type="text"] {
-				color: #fff;
-				width: 100%;
-				-webkit-appearance: none;
-				appearance: none;
-				background-color: transparent;
-				border: 0;
-				height: 1.4em;
+		&__input {
+			color: #fff;
+			width: 100%;
+			-webkit-appearance: none;
+			appearance: none;
+			background-color: transparent;
+			border: 1px solid transparent;
+			border-radius: 4px;
+			height: 2em;
+			padding: 5px 10px;
 
-				&:focus {
-					outline: 0;
-				}
+			&:focus {
+				outline: 0;
+			}
+
+			&--error {
+				border-color: #f00;
 			}
 		}
 

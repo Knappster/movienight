@@ -10,8 +10,8 @@ app.get('/', (req, res) => {
 
 app.use('/dist', express.static(path.join(__dirname, '/movienight-client/dist')));
 
-http.listen(3000, () => {
-	console.log('Listening on port *: 3000');
+http.listen(8080, () => {
+	console.log('Listening on port *: 8080');
 });
 
 io.on('connection', (socket) => {
