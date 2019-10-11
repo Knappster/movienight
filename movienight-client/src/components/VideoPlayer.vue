@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<video class="video-js vjs-default-skin vjs-16-9 vjs-big-play-centered" ref="videoPlayer"></video>
+		<video class="video-js vjs-default-skin vjs-big-play-centered" ref="videoPlayer"></video>
 	</div>
 </template>
 
@@ -19,6 +19,7 @@ export default {
 			, default() {
 				return {};
 			}
+			, fluid: false
 		}
 	}
 	, data() {
@@ -31,6 +32,7 @@ export default {
 			//console.log('onPlayerReady', this);
 		});
 
+		/*
 		this.player.on('error', function() {
 			let error = this.error();
 
@@ -41,6 +43,7 @@ export default {
 				);
 			}
 		});
+		*/
 	}
 	, beforeDestroy() {
 		if (this.player) {
@@ -56,3 +59,10 @@ export default {
 	}
 }
 </script>
+
+<style lang="scss">
+.video-js {
+	width: 100%;
+	height: 100%;
+}
+</style>

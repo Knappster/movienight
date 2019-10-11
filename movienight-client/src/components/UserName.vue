@@ -66,6 +66,14 @@ export default {
 	}
 	, mounted() {
 		this.$refs.username.focus();
+
+		if (localStorage.getItem('username')) {
+			this.user.name = localStorage.getItem('username');
+		}
+
+		if (localStorage.getItem('color')) {
+			this.user.color = localStorage.getItem('color');
+		}
 	}
 	, methods: {
 		addUser() {
